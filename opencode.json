@@ -1,0 +1,43 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "model": "opencode/big-pickle",
+    "enabled_providers": [
+        "deepseek",
+        "opencode"
+    ],
+    "provider": {
+        "opencode": {
+            "options": {
+                "apiKey": "{file:.opencode/keys/opencode-key.txt}",
+                "timeout": 900000,
+                "chunkTimeout": 600000
+            }
+        },
+        "deepseek": {
+            "options": {
+                "apiKey": "{file:.opencode/keys/deepseek-key.txt}",
+                "timeout": 900000,
+                "chunkTimeout": 600000
+            }
+        }
+    },
+    "skills": {
+        "paths": [
+            ".opencode/skill"
+        ]
+    },
+    "permission": {
+        "bash": {
+            "*": "allow",
+            "ssh *": "ask",
+            "*rm -rf*": "deny",
+            "*client-delete*": "ask",
+            "*DROP*": "ask"
+        },
+        "external_directory": {
+            "*": "deny",
+            "~/Code/Github/jmirinformatica/2asix-ARNES-SERVEIS/**": "allow",
+            "/home/adasilva/Code/Github/jmirinformatica/2asix-ARNES-SERVEIS/**": "allow"
+        }
+    }
+}

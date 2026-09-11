@@ -1,0 +1,5 @@
+# Secrets i configuració local del servidor remot
+inventory.env
+
+# Dependències del servidor MCP de notificacions
+mcp/**/node_modules
