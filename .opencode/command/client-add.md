@@ -1,5 +1,5 @@
 ---
-description: Dona d'alta un client nou (directori web, server block NGINX, registre DNS i usuari FTP) i genera una contrasenya segura.
+description: Dona d'alta un client nou (directori web amb pàgina de benvinguda per defecte, server block NGINX, registre DNS i usuari FTP) i genera una contrasenya segura.
 agent: sysadmin
 ---
 
@@ -29,15 +29,20 @@ Passos:
 
 3. Crea el directori web amb els permisos correctes (skill `nginx`).
 
-4. Crea el `server block` `/etc/nginx/sites-available/$client.conf`, enllaça'l
+4. Crea la pàgina `index.html` de benvinguda per defecte al `htdocs` del
+   client amb `arnes_deploy_welcome "$client"` (plantilla
+   `.opencode/templates/welcome.html`, propietat `www-data:www-data` i
+   permisos `644`).
+
+5. Crea el `server block` `/etc/nginx/sites-available/$client.conf`, enllaça'l
    a `sites-enabled/` i recarrega NGINX amb `nginx -t && systemctl reload nginx`
    (skill `nginx`).
 
-5. Afegeix el registre DNS `<client> IN A $SERVER_IP` a la zona, incrementa el
+6. Afegeix el registre DNS `<client> IN A $SERVER_IP` a la zona, incrementa el
    serial de la SOA, valida amb `named-checkzone` i recarrega amb
    `rndc reload $ZONE_BASE` (skill `bind9`).
 
-6. Genera la contrasenya i el hash, i crea la fila FTP (skills `mysql` i
+7. Genera la contrasenya i el hash, i crea la fila FTP (skills `mysql` i
    `pureftpd`):
 
    ```bash
@@ -48,7 +53,7 @@ Passos:
      ON DUPLICATE KEY UPDATE Password=VALUES(Password), Dir=VALUES(Dir), status=VALUES(status);\""
    ```
 
-7. Verifica el resultat:
+8. Verifica el resultat:
 
    ```bash
    dig +short "$client.$ZONE_BASE" @"$SERVER_IP"
@@ -56,7 +61,9 @@ Passos:
    remote "mysql pureftpd -N -e \"SELECT User,status FROM users WHERE User='$client';\""
    ```
 
-8. Registra l'operació amb `arnes_log "client-add" "$client" "ok"`.
+   La pàgina de benvinguda ha de respondre `HTTP/1.1 200` (creada al pas 4).
 
-9. Mostra la contrasenya generada **una sola vegada** i indica a l'usuari que
-   la desi en un lloc segur. No l'escriguis a cap fitxer ni al log.
+9. Registra l'operació amb `arnes_log "client-add" "$client" "ok"`.
+
+10. Mostra la contrasenya generada **una sola vegada** i indica a l'usuari que
+    la desi en un lloc segur. No l'escriguis a cap fitxer ni al log.

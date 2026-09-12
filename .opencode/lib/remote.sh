@@ -133,6 +133,30 @@ arnes_hash_password() {
     openssl passwd -1 -salt "$(openssl rand -hex 4)" "$pass"
 }
 
+# arnes_deploy_welcome <client>
+# Desplega la pàgina de benvinguda per defecte a
+# $WEB_ROOT/<client>/htdocs/index.html (propietat www-data:www-data, 644).
+# La plantilla canònica viu a .opencode/templates/welcome.html i s'envia
+# codificada en base64 perquè el contingut (cometes, $, accents) no xoqui
+# amb l'escapament de remote(). Substitueix els placeholders __CLIENT__ i
+# __DOMAIN__ pel nom del client i el seu domini. Idempotent.
+arnes_deploy_welcome() {
+    local client="$1"
+    local tpl
+    tpl="$(cd "$(dirname "${BASH_SOURCE[0]}")/../templates" 2>/dev/null && pwd)/welcome.html"
+    if [[ ! -f "$tpl" ]]; then
+        tpl=".opencode/templates/welcome.html"
+    fi
+    if [[ ! -f "$tpl" ]]; then
+        echo "ERROR: plantilla de benvinguda no trobada ($tpl)." >&2
+        return 1
+    fi
+    local html b64
+    html="$(sed -e "s/__CLIENT__/$client/g" -e "s/__DOMAIN__/$client.$ZONE_BASE/g" "$tpl")"
+    b64="$(printf '%s' "$html" | base64 -w0)"
+    remote "mkdir -p '$WEB_ROOT/$client/htdocs' && printf '%s' '$b64' | base64 -d > '$WEB_ROOT/$client/htdocs/index.html' && chown www-data:www-data '$WEB_ROOT/$client/htdocs/index.html' && chmod 644 '$WEB_ROOT/$client/htdocs/index.html'"
+}
+
 # Afegeix una línia de traçabilitat a LOG_FILE al servidor remot.
 # Format: ISO8601 <TAB> operacio <TAB> client <TAB> resultat
 arnes_log() {
