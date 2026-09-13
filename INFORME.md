@@ -4,6 +4,8 @@ Aquest curs sóc docent del mòdul de Serveis de 2n d'ASIX i vull introduïr els
 
 Per aquest motiu he creat aquest projecte on he definit un arnés per a gestionar un hosting web bàsic. El hosting està allotjat en un servidor remot que s'accedirà per SSH i consistirà en un servidor web (NGINX), un servidor de DNS (BIND9) i un servidor FTP amb usuaris virtuals (PureFTPD amb MySQL). Mitjançant l'arnès es podrà fer la instal·lació inicial del servidor, donar d'alta un client, donar de baixa, etc.
 
+El resultat de l'arnés es pot trobar en aquest repositori: [https://github.com/indocent/2asix-ARNES-SERVEIS](https://github.com/indocent/2asix-ARNES-SERVEIS).
+
 ## Primer PROMPT
 
 Primer he definit aquest promtp:
@@ -53,7 +55,7 @@ Desprès he demanat que doni d'alta l'usuari **alfonso**:
 
 ![alta](img/3.png)
 
-En aquest punt ha trigat força, amb problemes de MySQL, però ho ha resolt tot sol i m'ha creat el subdomini, la web i m'ha donat accés per SSH:
+En aquest punt ha trigat força, amb problemes de MySQL, però ho ha resolt tot sol i m'ha creat el subdomini, la web i m'ha donat accés per FTP:
 
 ![alta](img/4.png)
 
